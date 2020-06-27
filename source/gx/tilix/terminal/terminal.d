@@ -1039,6 +1039,8 @@ private:
                     return true;
                 }
             }
+
+
             return false;
         });
         vteHandlers ~= vte.addOnKeyPress(delegate(Event event, Widget widget) {
@@ -1050,6 +1052,26 @@ private:
                 addPromptPosition(row);
                 tracef("Added prompt position %d", row);
             }
+
+            /**
+             * [2019-12-29 zkanzler]
+             *  Attempting to allow sending Ctrl+Enter as
+             */
+            if (event.key.keyval == GdkKeysyms.GDK_Return) {
+                string feed = null;
+                if ((event.key.state & (ModifierType.CONTROL_MASK | ModifierType.SHIFT_MASK)) == (ModifierType.CONTROL_MASK | ModifierType.SHIFT_MASK))
+                    feed = "\x1b[24;5~";  // F36
+                else if (event.key.state & ModifierType.CONTROL_MASK)
+                    feed = "\x1b[21;5~";  // F34
+                else if (event.key.state & ModifierType.SHIFT_MASK)
+                    feed = "\x1b[23;5~";  // F35
+
+                if (feed) {
+                    vte.feedChild(feed);
+                    return true;
+                }
+            }
+
 
             if (isSynchronizedInput() && event.key.sendEvent != SendEvent.SYNC) {
                 static if (USE_COMMIT_SYNCHRONIZATION) {
