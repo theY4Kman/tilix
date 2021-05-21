@@ -1157,7 +1157,7 @@ private:
             string uuid = terminalUUID.length == 0? sessionUUID:terminalUUID;
             Notification n = new Notification(_(summary));
             n.setBody(_body);
-            n.setDefaultAction("app.activate-session::" ~ sessionUUID);
+            n.addButton("Activate", "app.activate-session::" ~ sessionUUID);
             tracef("Sending notification %s", uuid);
             getApplication().sendNotification(uuid, n);
             //if session not visible send to local handler
